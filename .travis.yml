@@ -1,0 +1,25 @@
+language: generic
+sudo: required
+services:
+  - docker
+before_install:
+  - docker build -t yusuf/client:v0 -f ./client/Dockerfile.dev-client ./client
+script:
+  - docker run -e CI=true yusuf/client:v0 npm run test -- --coverage
+
+after_success:
+  - docker build -t yusuf/client:v0 ./client
+  - docker build -t yusuf/server:v0 ./server
+  - docker build -t yusuf/worker:v0 ./worker
+  - docker build -t yusuf/nginx:v0 ./nginx
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-1"
+  app: "Containerization"
+  env: "Containerization-env"
+  bucket_name: "elasticbeanstalk-us-east-1-971902593315"
+  bucket_path: "Containerization"
+  on:
+    branch: main
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: "$AWS_ACESS_SECRET_KEY"
