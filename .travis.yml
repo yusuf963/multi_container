@@ -12,14 +12,9 @@ after_success:
   - docker build -t yusuf/server:v0 ./server
   - docker build -t yusuf/worker:v0 ./worker
   - docker build -t yusuf/nginx:v0 ./nginx
-deploy:
-  provider: elasticbeanstalk
-  region: "us-east-1"
-  app: "Containerization"
-  env: "Containerization-env"
-  bucket_name: "elasticbeanstalk-us-east-1-971902593315"
-  bucket_path: "Containerization"
-  on:
-    branch: main
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: "$AWS_ACESS_SECRET_KEY"
+  - echo "$DOCKER_PASSWORD" | docker  login -u "$DOCKER_ID" --password-stdin
+
+  - docker push yusuf/client:v0
+  - docker push yusuf/server:v0
+  - docker push yusuf/worker:v0
+  - docker push yusuf/nginx:v0
